@@ -4,11 +4,14 @@
 # ///
 """camas task definitions for eza — the single task runner (replaces the justfile).
 
-The fmt/clippy/test check loop is the single source of truth shared with CI, so
-``camas`` reproduces a unit-tests matrix cell and ``camas unit_tests
---github-matrix`` emits the os x rust matrix once. Runnable standalone with
-``uv run tasks.py <task>`` (PEP 723), so CI and contributors need only ``uv``.
-See MIGRATION.md for what maps where and which leaves are release-host only.
+The fmt/clippy/test leaves are the single source of truth shared with CI: the
+main-OS unit-tests cells run them via ``uv run tasks.py`` and the os x rust
+matrix is emitted from ``camas unit_tests --github-matrix``. The SSOT is at leaf
+granularity — CI still skips clippy on windows in YAML, and the BSD-VM jobs
+inline the same commands (uv is impractical to bootstrap there). Runnable
+standalone with ``uv run tasks.py <task>`` (PEP 723), so CI and contributors need
+only ``uv``. Release and cross-compile leaves shell out to convco/cross/pandoc
+and only run on a release host.
 """
 
 from camas import Claude, Config, Parallel, Sequential, Task, run_cli
@@ -124,7 +127,7 @@ cross = Sequential(
         ("bash", "-c", 'set -e\nmkdir -p "./target/bin-$(convco version)"\nrustup toolchain install stable'),
         name="setup",
     ),
-    Parallel(
+    Sequential(
         _cross_build("eza", "x86_64-unknown-linux-gnu"),
         _cross_build("eza", "x86_64-unknown-linux-musl"),
         _cross_build("eza", "aarch64-unknown-linux-gnu"),
