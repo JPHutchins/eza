@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2024 Christina Sørensen
+# SPDX-License-Identifier: EUPL-1.2
 # /// script
 # requires-python = ">=3.11"
 # dependencies = ["camas[mcp]>=0.1.27"]

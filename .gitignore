@@ -45,3 +45,4 @@ tests/test_dir
 # Claude Code agent tooling + camas run logs / per-leaf build dirs
 .claude
 .camas
+.mcp.json
